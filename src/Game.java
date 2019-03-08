@@ -36,6 +36,7 @@ public class Game implements Runnable {
     private WriteFile saveFile; //to store the saveFile
     private Player player; // to use a player
     public enum gameState { normal, pause, gameOver, victory }
+    private gameState gameState;
     public static int GROUND; // to check when invaders hit the ground and invade us
     public static final int BOMB_HEIGHT = 5;
     public static final int ALIEN_HEIGHT = 12;
@@ -48,6 +49,7 @@ public class Game implements Runnable {
     public static final int DELAY = 17;
     public static final int PLAYER_WIDTH = 100;
     public static final int PLAYER_HEIGHT = 100;
+    private 
     
     /**
      * to create title, width and height and set the game is still not running
@@ -86,6 +88,14 @@ public class Game implements Runnable {
      */
     public Player getPlayer() {
         return player;
+    }
+
+    public gameState getGameState() {
+        return gameState;
+    }
+
+    public void setGameState(gameState gameState) {
+        this.gameState = gameState;
     }
         
     /**
@@ -163,7 +173,7 @@ public class Game implements Runnable {
             saveFile.writeToFile(String.valueOf(bricks.size()));
             //Guarda los bloques en el juego 
             for (int i = 0; i < bricks.size(); i++) {
-                Brick myBrick = bricks.get(i);
+                Invader myBrick = bricks.get(i);
                 saveFile.writeToFile(String.valueOf(myBrick.getX()));
                 saveFile.writeToFile(String.valueOf(myBrick.getY()));
                 saveFile.writeToFile(String.valueOf(myBrick.getState()));
@@ -204,19 +214,19 @@ public class Game implements Runnable {
         for (int i = 0; i < numBlocks; i++) {
              iPosX = Integer.parseInt(fileIn.readLine());
              iPosY = Integer.parseInt(fileIn.readLine());
-            bricks.add(new Brick(iPosX, iPosY, 155, 55, this));
+            bricks.add(new Invader(iPosX, iPosY, 155, 55, this));
             
-            Brick myBrick = bricks.get(i);
+            Invader myBrick = bricks.get(i);
             String actualState = fileIn.readLine();
             
             if ("normal".equals(actualState)) {
-             myBrick.setState(Brick.status.normal);    
+             myBrick.setState(Invader.status.normal);    
             }
             if ("hit".equals(actualState)) {
-             myBrick.setState(Brick.status.hit);    
+             myBrick.setState(Invader.status.hit);    
             }
             if ("destroyed ".equals(actualState)) {
-             myBrick.setState(Brick.status.destroyed);    
+             myBrick.setState(Invader.status.destroyed);    
             }
         }
         
@@ -272,7 +282,6 @@ public class Game implements Runnable {
         if (getGameState() == gameState.normal) {
             if (getPlayer().getState() == Player.playerState.dead) {
                 setGameState(gameState.gameOver);
-                loseSound.play();
             }
             
             //Saves the game if the player presses "G"
@@ -286,13 +295,7 @@ public class Game implements Runnable {
             
             // advancing player with collision
             player.tick();
-            // Returning the player to normal size when timer is done
-            if (powerTimer <= 0) {
-                resizeBar(226);
-            }
-            else {
-                powerTimer--;
-            }
+            
             // ticking the ball
             ball.tick();
             // ticking bricks
@@ -300,25 +303,7 @@ public class Game implements Runnable {
                 Brick myBrick = bricks.get(i);
                 myBrick.tick();
             }
-            // ticking powerUps
-            for (int i = 0; i < drops.size(); i++) {
-                PowerUp myPower = drops.get(i);
-                myPower.tick();
-                // Delete from game if power up isnt caught by player
-                if (myPower.getY() >= getHeight()) {
-                    drops.remove(i);
-                }
-                if (myPower.getHitbox().intersects(getPlayer().getHitbox())) {
-                    if (myPower.getType() == PowerUp.Type.good) {
-                        resizeBar(226 * 2);
-                        drops.remove(i);                        
-                    }
-                    else if (myPower.getType() == PowerUp.Type.bad) {
-                        resizeBar(226 / 2);
-                        drops.remove(i);
-                    }
-                }
-            }
+            
             //Checks if there's a collison with the bricks
             for(int j = 0; j < bricks.size(); j++){
                 Brick myBrick = bricks.get(j);
@@ -334,16 +319,7 @@ public class Game implements Runnable {
                     ball.setXSpeed(ball.getXSpeed() * -1);
                 }
                 
-                if (myBrick.getState() == Brick.status.destroyed) {
-                    
-                    if (!myBrick.isAlreadyDropped() && myBrick.getDropProb() <= myBrick.getGoodDropChance()) {
-                        drops.add(new PowerUp(myBrick.getX() + myBrick.getWidth() / 2 - 25, myBrick.getY(), 50, 50, PowerUp.Type.good, this));
-                        myBrick.setAlreadyDropped(true);
-                    }
-                    else if (!myBrick.isAlreadyDropped() && myBrick.getDropProb() >= myBrick.getBadDropChance()) {
-                        drops.add(new PowerUp(myBrick.getX() + myBrick.getWidth() / 2 - 25, myBrick.getY(), 50, 50, PowerUp.Type.bad, this));
-                        myBrick.setAlreadyDropped(true);
-                    }
+                if (myBrick.getState() == Brick.status.destroyed) {                    
                     if (myBrick.isAnimOver())   bricks.remove(j);
                 }
             }
@@ -377,7 +353,6 @@ public class Game implements Runnable {
                 setGameState(gameState.normal);
                 keyManager.setStart(false);
                 player = new Player(getWidth()/2 - 113, getHeight() - 75, 1, 226, 50, this);
-                ball = new Projectile(player.getX() + player.getWidth()/2 - 25, player.getY() - 51, 50, 50, this);
                 for (int i = 0; i < 4; i++) {
                     for (int j = 0; j < 9; j++) {
                         int iPosX = j * 141;
@@ -387,16 +362,6 @@ public class Game implements Runnable {
                 }
             }
         }
-    }
-    
-    /**
-     * Changes the size of the bar
-     * @param width is the new size of the bar
-     */
-    private void resizeBar(int width) {
-        getPlayer().setWidth(width);
-        getPlayer().getHitbox().setSize(width, getPlayer().getHeight());
-        powerTimer = 300;
     }
     
     /**

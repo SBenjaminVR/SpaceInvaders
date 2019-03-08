@@ -223,7 +223,7 @@ public class Projectile extends Item {
      * @return whether the projectile waa intersected by a brick
      */
     public boolean intersecta(Object obj) {
-        return obj instanceof Brick && hitbox.intersects(((Brick) obj).getPerimetro());
+        return obj instanceof Invader && hitbox.intersects(((Invader) obj).getPerimetro());
         
     }
     /**

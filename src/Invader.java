@@ -15,7 +15,7 @@ import java.awt.Rectangle;
  * @author Benjamin Valdez
  */
 
-public class Brick extends Item {
+public class Invader extends Item {
     
     private int width; //width of the brick
     private int height; //height of the brick
@@ -35,7 +35,7 @@ public class Brick extends Item {
     private int badDropChance; // Chance to drop bad powerup
     private boolean alreadyDropped; //Boolean to know if the block has already dropped a powerUp
     
-    public Brick(int x, int y, int width, int height, Game game) {
+    public Invader(int x, int y, int width, int height, Game game) {
         super(x, y);
         this.width = width;
         this.height = height;
