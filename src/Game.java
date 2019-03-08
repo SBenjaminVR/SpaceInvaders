@@ -32,19 +32,22 @@ public class Game implements Runnable {
     private int height; //height of the window
     private Thread thread; //thread to create the game
     private boolean running; //to set the game
-    private Player player; // to use a player
-    private LinkedList<Brick> bricks ;// to use the bricks 
-    private Projectile ball; //to use the projectile
     private KeyManager keyManager; // to manage the keyboard
     private WriteFile saveFile; //to store the saveFile
-    private enum gameState { normal, gameOver, pause, victory }
-    private gameState gameState; //to have the gameStates
-    private int brickTimer; //invulnerability frames for bricks
-    private SoundClip loseSound; //Sound if the player losses
-    private long tiempoActual; //tiempo de la animacion 
-    private String[] arr; //aux for the reading file
-    private LinkedList<PowerUp> drops; //PowerUps Drops
-    private int powerTimer; //timer for the powerUps Drops
+    private Player player; // to use a player
+    public enum gameState { normal, pause, gameOver, victory }
+    public static int GROUND; // to check when invaders hit the ground and invade us
+    public static final int BOMB_HEIGHT = 5;
+    public static final int ALIEN_HEIGHT = 12;
+    public static final int ALIEN_WIDTH = 12;
+    public static final int BORDER_RIGHT = 30;
+    public static final int BORDER_LEFT = 5;
+    public static final int GO_DOWN = 15;
+    public static final int NUMBER_OF_ALIENS_TO_DESTROY = 24;
+    public static final int CHANCE = 5;
+    public static final int DELAY = 17;
+    public static final int PLAYER_WIDTH = 100;
+    public static final int PLAYER_HEIGHT = 100;
     
     /**
      * to create title, width and height and set the game is still not running
@@ -58,11 +61,7 @@ public class Game implements Runnable {
         this.height = height;
         running = false;
         keyManager = new KeyManager();
-        this.gameState = gameState.normal;
-        bricks = new LinkedList<Brick>();
-        brickTimer = 0;
-        drops = new LinkedList<PowerUp>();
-        powerTimer = 0;
+        GROUND = height / 8 *7;
     }
 
     /**
@@ -88,30 +87,6 @@ public class Game implements Runnable {
     public Player getPlayer() {
         return player;
     }
-    
-    /**
-     * Gets the projectile that is used in the game
-     * @return the projectile object
-     */
-    public Projectile getBall() {
-        return ball;
-    }
-
-    /**
-     * Gets the actual game state of the game
-     * @return the actual game state of the game
-     */
-    public gameState getGameState() {
-        return gameState;
-    }
-
-    /**
-     * Changes the state of the game
-     * @param gameState  that is the new state of the game
-     */
-    public void setGameState(gameState gameState) {
-        this.gameState = gameState;
-    }
         
     /**
      * Initializing the display window of the game
@@ -119,9 +94,7 @@ public class Game implements Runnable {
     private void init() {
         display = new Display(title, width, height);
         Assets.init();        
-        loseSound = Assets.loseSound;
         player = new Player(getWidth()/2 - 113, getHeight() - 75, 1, 226, 50, this);
-        ball = new Projectile(player.getX() + player.getWidth()/2 - 25, player.getY() - 51, 50, 50, this);
 
         int azarX = (int) (Math.random() * (9 - 1 + 1)) + 1;
         int azarY = (int) (Math.random() * (4 - 0 + 1)) + 0;
@@ -129,7 +102,7 @@ public class Game implements Runnable {
             for (int j = 0; j < 9; j++) {
                 int iPosX = j * 141;
                 int iPosY = 158 - i * 47;
-                bricks.add(new Brick(iPosX, iPosY, 155, 55, this));
+                //bricks.add(new Brick(iPosX, iPosY, 155, 55, this));
             }
         }
 
@@ -278,7 +251,6 @@ public class Game implements Runnable {
      * @throws IOException 
      */
     private void tick() throws IOException {
-        brickTimer--;
         keyManager.tick();
         //Pauses the game if the player presses 'P'
         if (keyManager.getPause() && getGameState() == gameState.normal) {
