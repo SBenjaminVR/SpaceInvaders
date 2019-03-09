@@ -47,8 +47,8 @@ public class Game implements Runnable {
     public static final int NUMBER_OF_ALIENS_TO_DESTROY = 24;
     public static final int CHANCE = 5;
     public static final int DELAY = 17;
-    public static final int PLAYER_WIDTH = 100;
-    public static final int PLAYER_HEIGHT = 100;
+    public static final int PLAYER_WIDTH = 50;
+    public static final int PLAYER_HEIGHT = 50;
     private LinkedList<Invader> invaders;
     private Projectile bullet;
     
@@ -305,6 +305,9 @@ public class Game implements Runnable {
             //Saves the game if the player presses "G"
             if (keyManager.getSave()) {
 //                save();
+            }
+            if (keyManager.getRestart()) {
+                setGameState(gameState.gameOver);
             }
             
             // advancing player with collision

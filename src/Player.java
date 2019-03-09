@@ -129,7 +129,7 @@ public class Player extends Item {
         // Normal game stuff
         if (state == playerState.alive) {
             // refresh animation
-            bar.tick();
+         //   bar.tick();
             // refresh hitbox location
             hitbox.setLocation(getX(), getY());
             
@@ -157,6 +157,6 @@ public class Player extends Item {
      */    
     @Override
     public void render(Graphics g) {
-      // g.drawImage(bar.getCurrentFrame(), getX(), getY(), getWidth(), getHeight(), null);
+      g.drawImage(Assets.player, getX(), getY(), getWidth(), getHeight(), null);
     }
 }
