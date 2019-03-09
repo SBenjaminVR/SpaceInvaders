@@ -306,6 +306,9 @@ public class Game implements Runnable {
             if (keyManager.getSave()) {
 //                save();
             }
+            if (keyManager.getRestart()) {
+                setGameState(gameState.gameOver);
+            }
             
             // advancing player with collision
             player.tick();

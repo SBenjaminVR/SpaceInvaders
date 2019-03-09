@@ -24,9 +24,11 @@ public class KeyManager implements KeyListener {
     private boolean pause; //flag to pause the game
     private boolean load; //flag to load the game
     private boolean save; //flag to save the game
+    private boolean restart; //flag to restart the game
     private boolean lastPause; //flag to know the last Pause 
     private boolean lastSave; //flag to know the last Save 
     private boolean lastLoad;//flag to know the last Load 
+    private boolean lastRestart; //flag to restart the game
 
     
     public KeyManager() {
@@ -86,11 +88,18 @@ public class KeyManager implements KeyListener {
     }
     
     /**
-     * Knos if the game has just loaded a save file
+     * Knows if the game has just loaded a save file
      * @return true if the game has loaded a save file
      */
     public boolean getLoad() {
         return load;
+    }
+    /**
+     * Knows if the game has just restarted
+     * @return trueif the game has just restarted
+     */
+    public boolean getRestart() {
+        return restart;
     }
     
     /**
@@ -118,6 +127,12 @@ public class KeyManager implements KeyListener {
         else {
             load = false; 
         }
+        if (lastRestart && !keys[KeyEvent.VK_R]) {
+            load = true;
+        }
+        else {
+            load = false; 
+        }
         
         left = keys[KeyEvent.VK_LEFT]; 
         right = keys[KeyEvent.VK_RIGHT];
@@ -125,5 +140,6 @@ public class KeyManager implements KeyListener {
         lastPause = keys[KeyEvent.VK_P];
         lastLoad = keys[KeyEvent.VK_C];
         lastSave = keys[KeyEvent.VK_G];
+        lastRestart = keys[KeyEvent.VK_R];
     }
 }
