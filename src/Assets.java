@@ -20,6 +20,9 @@ public class Assets {
     public static BufferedImage player; //to store the image of the player
     public static BufferedImage bullet; //to store the image of the bullet;
     
+    public static BufferedImage bombSprites; //to store the enemies bullets
+    public static BufferedImage bombs[]; // pictures for the bomb
+    
     public static BufferedImage invaderSprites; // to store the sprites
     public static BufferedImage invaders[]; // pictures to go up
     
@@ -65,6 +68,10 @@ public class Assets {
         SpreadSheet pulpoSpritesheet = new SpreadSheet(pulpoSprites);// spritesheet of the monstros
         pulpos = new BufferedImage[2];                              // the sprites for the monstros
         pulpoDestroyEffect = ImageLoader.loadImage("/images/pulpoDeath.png"); // Sprite for dying
+        
+        bombSprites = ImageLoader.loadImage("/images/enemyBullet.png"); // monstros sprites
+        SpreadSheet bombSpritesheet = new SpreadSheet(bombSprites);// spritesheet of the monstros
+        bombs = new BufferedImage[2]; 
 //        
 //        destroySprites = ImageLoader.loadImage("/images/destroyedAnimationSprite.png"); // the spritesheet of the destroyed bricks
 //        SpreadSheet destroySpritesheet = new SpreadSheet(destroySprites);       // spritesheet for the animation of the destroy effect
@@ -83,6 +90,9 @@ public class Assets {
             invaders[i] = invaderSpritesheet.crop(i * 220, 0, 220, 160);
             monstros[i] = monstroSpritesheet.crop(i * 218, 0, 218, 160);
             pulpos[i] = pulpoSpritesheet.crop(i * 159, 0, 159, 160);           
+        }
+        for (int i = 0; i < 2; i++) {
+            bombs[i] = bombSpritesheet.crop(i * 6, 0, 6, 12);
         }
     }
 }

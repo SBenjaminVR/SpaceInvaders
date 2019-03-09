@@ -30,6 +30,7 @@ public class Invader extends Item {
     private boolean animOver;  //Boolean to know if the animetion is over
     private SoundClip destroySound; // to play when invader is destroyed
     private boolean destroySndDone;
+    private Bomb bomb; //To store if the alien has a bomb
     
     public Invader(int x, int y, int width, int height, Type type , Game game) {
         super(x, y);
@@ -53,6 +54,7 @@ public class Invader extends Item {
         this.animOver = false;
         this.destroySound = Assets.destroySound;
         this.destroySndDone = false;
+        this.bomb = null;
     }
     
     /**
@@ -116,6 +118,10 @@ public class Invader extends Item {
     public Type getType() {
         return type;
     }  
+    
+    public Bomb getBomb() {
+        return bomb;
+    }
         
     @Override
     public void tick() {
@@ -125,9 +131,26 @@ public class Invader extends Item {
                 //destroySound.play();
                 destroySndDone = true;
             }  
+            if (bomb != null) {
+                if (bomb.getCollision()) {
+                    bomb = null;
+                }
+            } 
         }
         else if (getState() == status.normal) {
             anim.tick();
+            
+            if (bomb != null) {
+                if (bomb.getCollision()) {
+                    bomb = null;
+                }
+            } 
+            else {
+                int azar = (int) (Math.random() * (10000-1+1) ) + 1;
+                if (azar == 1) {
+                    bomb = new Bomb(x + width/2-3, y+height, 12, 24, game);
+                }
+            }
             
         }
     }
