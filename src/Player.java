@@ -22,7 +22,7 @@ public class Player extends Item {
     private int speed;      // Speed of the player
     private Rectangle hitbox;// The player's hitbox
     private Animation bar; // to store the animation for the bar
-    public enum playerState { init, alive, dead } // Declares the player's possible states
+    public enum playerState {alive, dead } // Declares the player's possible states
     private playerState state; // To store the player's current state
     
     /**
@@ -43,7 +43,7 @@ public class Player extends Item {
         this.speed = 10;
         this.hitbox = new Rectangle(x, y, width, height/3);
         //this.bar = new Animation(Assets.playerBar, 100);
-        this.state = playerState.init;
+        this.state = playerState.alive;
     }
      /**
       * Returns the width of the player
@@ -121,11 +121,7 @@ public class Player extends Item {
      */
     @Override
     public void tick() {
-        
-        if (state == playerState.init && game.getKeyManager().isStart()) {
-            // Start the game
-            state = playerState.alive;            
-        }
+     
         // Normal game stuff
         if (state == playerState.alive) {
             // refresh animation
