@@ -119,7 +119,7 @@ public class KeyManager implements KeyListener {
             load = false; 
         }
         
-        left = keys[KeyEvent.VK_LEFT];
+        left = keys[KeyEvent.VK_LEFT]; 
         right = keys[KeyEvent.VK_RIGHT];
         enter = keys[KeyEvent.VK_ENTER];
         lastPause = keys[KeyEvent.VK_P];
