@@ -2,6 +2,7 @@
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -20,38 +21,38 @@ public class Invader extends Item {
     private int width; //width of the brick
     private int height; //height of the brick
     private Game game; 
-    private Animation destroyEffect; // to store the animation for being destroyed
-    public enum status { normal, hit, destroyed } //status that the block can have
+    private Animation anim; // to store the animation for the invader
+    private BufferedImage destroyEffect; // to store the image for being destroyed
+    public enum status { normal, destroyed } //status that the block can have
+    public enum Type { invader, monstro, pulpo }
     private status state ; //state
-    private int lives; //Number of hits that the brick can receive
-    private int bTimer; // Invulnerability frames
+    private Type type; // type of invader
     private boolean animOver;  //Boolean to know if the animetion is over
-    private boolean destroySndDone; //Boolean to know if the block has been broken
-    private SoundClip destroySound; //Sound of the block when it's destroyed 
-    private SoundClip hitSound; //Sound of the block when it receives a hit
-    private boolean hitSndDone; //Boolean to know if the block has received a hit
-    private int dropProb; // variable to check if brick can drop powerup
-    private int goodDropChance; // Chance to drop good powerup
-    private int badDropChance; // Chance to drop bad powerup
-    private boolean alreadyDropped; //Boolean to know if the block has already dropped a powerUp
+    private SoundClip destroySound; // to play when invader is destroyed
+    private boolean destroySndDone;
     
-    public Invader(int x, int y, int width, int height, Game game) {
+    public Invader(int x, int y, int width, int height, Type type , Game game) {
         super(x, y);
         this.width = width;
         this.height = height;
+        this.type = type;
         this.game = game;
-        this.destroyEffect = new Animation(Assets.destroyEffect, 100);
+        if (this.type == Type.invader) {
+            this.anim = new Animation (Assets.invaders, 200);
+            this.destroyEffect = Assets.invaderDestroyEffect;
+        }
+        else if (this.type == Type.monstro) {
+            this.anim = new Animation (Assets.monstros, 200);
+            this.destroyEffect = Assets.monstroDestroyEffect;
+        }
+        else if (this.type == Type.pulpo) {
+            this.anim = new Animation (Assets.pulpos, 200);
+            this.destroyEffect = Assets.pulpoDestroyEffect;
+        }        
         this.state = status.normal;
-        this.lives = 2;
         this.animOver = false;
         this.destroySound = Assets.destroySound;
         this.destroySndDone = false;
-        this.hitSound = Assets.hitSound;
-        this.hitSndDone = false;
-        this.dropProb = (int) (Math.random() * 100); // random number from 0 to 100
-        this.goodDropChance = 10; // if dropProb is <= goodDropChance drop it
-        this.badDropChance = 90; // if dropProb is >= badDropChance drop it
-        this.alreadyDropped = false;
     }
     
     /**
@@ -112,87 +113,27 @@ public class Invader extends Item {
         return animOver;
     }
 
-    /**
-     * To get the invulnerability frames of the brick
-     * @return the timer of invulnerability
-     */
-    public int getbTimer() {
-        return bTimer;
-    }
-
-    /**
-     * Changes the time for the invulnerability frames
-     * @param bTimer is the new time for invulnerability
-     */
-    public void setbTimer(int bTimer) {
-        this.bTimer = bTimer;
-    }
-
-    /**
-     * Gets the chance that has a powerUp of spawn
-     * @return the chance that a powerUP has of spawn
-     */
-    public int getDropProb() {
-        return dropProb;
-    }
-
-    /**
-     * Gets the chance that has a powerUp of spawn a good powerUp
-     * @return the chance that a powerUP has of spawn a good powerUp
-     */
-    public int getBadDropChance() {
-        return badDropChance;
-    }
-
-    /**
-     * Gets the chance that has a powerUp of spawn a bad powerUP
-     * @return the chance that a powerUP has of spawn a bad powerUp
-     */
-    public int getGoodDropChance() {
-        return goodDropChance;
-    }
-
-    /**
-     * Gets if the brick has already spawned a powerUp
-     * @return true if the brick has already spawned a powerUP 
-     */
-    public boolean isAlreadyDropped() {
-        return alreadyDropped;
-    }
-
-    /**
-     * Changes the boolean that knows if the brick has already spawned a powerUp
-     * @param alreadyDropped that says if the brick has already spawned a powerUp
-     */
-    public void setAlreadyDropped(boolean alreadyDropped) {
-        this.alreadyDropped = alreadyDropped;
-    }    
+    public Type getType() {
+        return type;
+    }  
         
     @Override
     public void tick() {
-        //If the brick gets hit, it produces a sound 
-        if (getState() == status.hit) {
-            if (!hitSndDone) {
-                hitSound.play();
-                hitSndDone = true;
-            }
-        }
-        //If the brick gets destroyed it plays an animation
+        //If the invader gets destroyed it plays an animation
         if (getState() == status.destroyed) {
             if (!destroySndDone) {
                 destroySound.play();
                 destroySndDone = true;
-            }            
-            destroyEffect.tick();
-            if (destroyEffect.getIndex() == 5) {
-                animOver = true;
-            }
+            }  
+        }
+        else if (getState() == status.normal) {
+            anim.tick();
         }
     }
     
     /**
-     * To get the perimeter of the brick
-     * @return the perimeter of the brick
+     * To get the perimeter of the invader
+     * @return the perimeter of the invader
      */
     public Rectangle getPerimetro() {
 
@@ -201,15 +142,12 @@ public class Invader extends Item {
     
     @Override
     public void render(Graphics g) {
-       if (getState() == status.normal) {
-            g.drawImage(Assets.drug, getX(), getY(), getWidth(), getHeight(), null);
-       }
-       if (getState() == status.hit) {
-            g.drawImage(Assets.damagedBrick, getX(), getY(), getWidth(), getHeight(), null);
-       }
-       if (getState() == status.destroyed) {
-           g.drawImage(destroyEffect.getCurrentFrame(), getX(), getY(), getWidth(), getHeight(), null);
-       }
+        if (getState() == status.normal) {
+             g.drawImage(anim.getCurrentFrame(), getX(), getY(), getWidth(), getHeight(), null);
+        }
+        if (getState() == status.destroyed) {
+            g.drawImage(destroyEffect, getX(), getY(), getWidth(), getHeight(), null);
+        }     
        
     }
 }

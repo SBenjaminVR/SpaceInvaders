@@ -42,7 +42,7 @@ public class Player extends Item {
         this.game = game;
         this.speed = 10;
         this.hitbox = new Rectangle(x, y, width, height/3);
-        this.bar = new Animation(Assets.playerBar, 100);
+        //this.bar = new Animation(Assets.playerBar, 100);
         this.state = playerState.init;
     }
      /**
@@ -148,9 +148,6 @@ public class Player extends Item {
             if (getX() <= 0) {
                 setX(0);
             }
-            if (game.getBall().getState() == Projectile.ballStatus.fallen) {
-                setState(playerState.dead);
-            }
         }       
     }
     
@@ -160,6 +157,6 @@ public class Player extends Item {
      */    
     @Override
     public void render(Graphics g) {
-       g.drawImage(bar.getCurrentFrame(), getX(), getY(), getWidth(), getHeight(), null);
+      // g.drawImage(bar.getCurrentFrame(), getX(), getY(), getWidth(), getHeight(), null);
     }
 }

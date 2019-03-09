@@ -35,21 +35,22 @@ public class Game implements Runnable {
     private KeyManager keyManager; // to manage the keyboard
     private WriteFile saveFile; //to store the saveFile
     private Player player; // to use a player
-    public enum gameState { normal, pause, gameOver, victory }
+    public enum gameState { normal, pause, gameOver}
     private gameState gameState;
     public static int GROUND; // to check when invaders hit the ground and invade us
     public static final int BOMB_HEIGHT = 5;
-    public static final int ALIEN_HEIGHT = 12;
-    public static final int ALIEN_WIDTH = 12;
-    public static final int BORDER_RIGHT = 30;
-    public static final int BORDER_LEFT = 5;
+    public static final int ALIEN_HEIGHT = 25;
+    public static final int ALIEN_WIDTH = 50;
+    public static final int BORDERX = 50;
+    public static final int BORDERY = 25;
     public static final int GO_DOWN = 15;
     public static final int NUMBER_OF_ALIENS_TO_DESTROY = 24;
     public static final int CHANCE = 5;
     public static final int DELAY = 17;
     public static final int PLAYER_WIDTH = 100;
     public static final int PLAYER_HEIGHT = 100;
-    private 
+    private LinkedList<Invader> invaders;
+    private Projectile bullet;
     
     /**
      * to create title, width and height and set the game is still not running
@@ -63,7 +64,9 @@ public class Game implements Runnable {
         this.height = height;
         running = false;
         keyManager = new KeyManager();
+        gameState = gameState.normal;
         GROUND = height / 8 *7;
+        invaders = new LinkedList<Invader>();
     }
 
     /**
@@ -97,6 +100,10 @@ public class Game implements Runnable {
     public void setGameState(gameState gameState) {
         this.gameState = gameState;
     }
+
+    public Projectile getBullet() {
+        return bullet;
+    }  
         
     /**
      * Initializing the display window of the game
@@ -104,18 +111,29 @@ public class Game implements Runnable {
     private void init() {
         display = new Display(title, width, height);
         Assets.init();        
-        player = new Player(getWidth()/2 - 113, getHeight() - 75, 1, 226, 50, this);
-
-        int azarX = (int) (Math.random() * (9 - 1 + 1)) + 1;
-        int azarY = (int) (Math.random() * (4 - 0 + 1)) + 0;
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 9; j++) {
-                int iPosX = j * 141;
-                int iPosY = 158 - i * 47;
-                //bricks.add(new Brick(iPosX, iPosY, 155, 55, this));
+        player = new Player(getWidth()/2 - PLAYER_WIDTH/2, getHeight() - PLAYER_HEIGHT - BORDERY, 1, PLAYER_WIDTH, PLAYER_HEIGHT, this);
+        bullet = new Projectile(getWidth()/2, -50, 50, 50, this);
+        // Add pulpo invaders
+        for (int j = 0; j < 12; j++) {
+            int iPosX = (BORDERX + ALIEN_WIDTH)* j;
+            invaders.add(new Invader(iPosX + BORDERX, BORDERY, ALIEN_WIDTH, ALIEN_HEIGHT, Invader.Type.pulpo, this));            
+        }
+        // Add weird invaders
+        for (int i = 0; i < 2; i++) {
+            for (int j = 0; j < 12; j++) {
+                int iPosX = (BORDERX + ALIEN_WIDTH)* j;
+                int iPosY = BORDERY * i + ALIEN_HEIGHT + i * ALIEN_HEIGHT;
+                invaders.add(new Invader(iPosX + BORDERX, iPosY + BORDERY * 2, ALIEN_WIDTH, ALIEN_HEIGHT, Invader.Type.monstro, this));            
+            }
+        }        
+        // Add normal invaders
+        for (int i = 0; i < 2; i++) {
+            for (int j = 0; j < 12; j++) {
+                int iPosX = (BORDERX + ALIEN_WIDTH)* j;
+                int iPosY = BORDERY * i + ALIEN_HEIGHT * 3 + i * ALIEN_HEIGHT;
+                invaders.add(new Invader(iPosX + BORDERX, iPosY + BORDERY * 4, ALIEN_WIDTH, ALIEN_HEIGHT, Invader.Type.invader, this));            
             }
         }
-
         display.getJframe().addKeyListener(keyManager);
     }
     
@@ -165,96 +183,96 @@ public class Game implements Runnable {
     /**
      * Saves the game in "save.txt" that can bea loaded later
      */
-    private void save() {
-        try {
-            saveFile = new WriteFile("save.txt", false);
-            saveFile.writeToFile(String.valueOf(player.getX()));
-            saveFile.setAppend(true);
-            saveFile.writeToFile(String.valueOf(bricks.size()));
-            //Guarda los bloques en el juego 
-            for (int i = 0; i < bricks.size(); i++) {
-                Invader myBrick = bricks.get(i);
-                saveFile.writeToFile(String.valueOf(myBrick.getX()));
-                saveFile.writeToFile(String.valueOf(myBrick.getY()));
-                saveFile.writeToFile(String.valueOf(myBrick.getState()));
-            }
-            //Guarda valores de la bola
-            saveFile.writeToFile(String.valueOf(ball.getX()));
-            saveFile.writeToFile(String.valueOf(ball.getY()));
-            saveFile.writeToFile(String.valueOf(ball.getXSpeed()));
-            saveFile.writeToFile(String.valueOf(ball.getYSpeed()));
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
-    }
+//    private void save() {
+//        try {
+//            saveFile = new WriteFile("save.txt", false);
+//            saveFile.writeToFile(String.valueOf(player.getX()));
+//            saveFile.setAppend(true);
+//            saveFile.writeToFile(String.valueOf(bricks.size()));
+//            //Guarda los bloques en el juego 
+//            for (int i = 0; i < bricks.size(); i++) {
+//                Invader myBrick = bricks.get(i);
+//                saveFile.writeToFile(String.valueOf(myBrick.getX()));
+//                saveFile.writeToFile(String.valueOf(myBrick.getY()));
+//                saveFile.writeToFile(String.valueOf(myBrick.getState()));
+//            }
+//            //Guarda valores de la bola
+//            saveFile.writeToFile(String.valueOf(ball.getX()));
+//            saveFile.writeToFile(String.valueOf(ball.getY()));
+//            saveFile.writeToFile(String.valueOf(ball.getXSpeed()));
+//            saveFile.writeToFile(String.valueOf(ball.getYSpeed()));
+//        } catch (IOException e) {
+//            System.out.println(e.getMessage());
+//        }
+//    }
     
     /**
      * Loads a game if it has a save file;
      * @throws IOException 
      */
-    public void leeArchivo() throws IOException {
-        BufferedReader fileIn;
-        try {
-            fileIn = new BufferedReader(new FileReader("save.txt"));
-        } catch (FileNotFoundException e) {
-            File puntos = new File("save.txt");
-            PrintWriter fileOut = new PrintWriter(puntos);
-            fileOut.println("100,demo");
-            fileOut.close();
-            fileIn = new BufferedReader(new FileReader("save.txt"));
-        }
-        String dato = fileIn.readLine();
-        
-        int num = (Integer.parseInt(dato));
-        int iPosX, iPosY;
-        player.setX(num);
-        
-        int numBlocks = Integer.parseInt(fileIn.readLine());
-        bricks.clear();
-        for (int i = 0; i < numBlocks; i++) {
-             iPosX = Integer.parseInt(fileIn.readLine());
-             iPosY = Integer.parseInt(fileIn.readLine());
-            bricks.add(new Invader(iPosX, iPosY, 155, 55, this));
-            
-            Invader myBrick = bricks.get(i);
-            String actualState = fileIn.readLine();
-            
-            if ("normal".equals(actualState)) {
-             myBrick.setState(Invader.status.normal);    
-            }
-            if ("hit".equals(actualState)) {
-             myBrick.setState(Invader.status.hit);    
-            }
-            if ("destroyed ".equals(actualState)) {
-             myBrick.setState(Invader.status.destroyed);    
-            }
-        }
-        
-        iPosX = Integer.parseInt(fileIn.readLine());
-        iPosY = Integer.parseInt(fileIn.readLine());
-        
-        ball.setX(iPosX);
-        ball.setY(iPosY);
-        
-        double speedX = Double.parseDouble(fileIn.readLine());
-        double speedY = Double.parseDouble(fileIn.readLine());
-        
-        ball.setXSpeed(speedX);
-        ball.setYSpeed(speedY);
-        
-        dato = fileIn.readLine();
-        while (dato != null) {
-
-            arr = dato.split(",");
-           // player.setX(arr);
-            num = (Integer.parseInt(dato));
-            
-            //String nom = arr[1];
-            //vec.add(new Puntaje(nom, num));
-            dato = fileIn.readLine();
-        }
-        fileIn.close();
-    }
+//    public void leeArchivo() throws IOException {
+//        BufferedReader fileIn;
+//        try {
+//            fileIn = new BufferedReader(new FileReader("save.txt"));
+//        } catch (FileNotFoundException e) {
+//            File puntos = new File("save.txt");
+//            PrintWriter fileOut = new PrintWriter(puntos);
+//            fileOut.println("100,demo");
+//            fileOut.close();
+//            fileIn = new BufferedReader(new FileReader("save.txt"));
+//        }
+//        String dato = fileIn.readLine();
+//        
+//        int num = (Integer.parseInt(dato));
+//        int iPosX, iPosY;
+//        player.setX(num);
+//        
+//        int numBlocks = Integer.parseInt(fileIn.readLine());
+//        bricks.clear();
+//        for (int i = 0; i < numBlocks; i++) {
+//             iPosX = Integer.parseInt(fileIn.readLine());
+//             iPosY = Integer.parseInt(fileIn.readLine());
+//            bricks.add(new Invader(iPosX, iPosY, 155, 55, this));
+//            
+//            Invader myBrick = bricks.get(i);
+//            String actualState = fileIn.readLine();
+//            
+//            if ("normal".equals(actualState)) {
+//             myBrick.setState(Invader.status.normal);    
+//            }
+//            if ("hit".equals(actualState)) {
+//             myBrick.setState(Invader.status.hit);    
+//            }
+//            if ("destroyed ".equals(actualState)) {
+//             myBrick.setState(Invader.status.destroyed);    
+//            }
+//        }
+//        
+//        iPosX = Integer.parseInt(fileIn.readLine());
+//        iPosY = Integer.parseInt(fileIn.readLine());
+//        
+//        ball.setX(iPosX);
+//        ball.setY(iPosY);
+//        
+//        double speedX = Double.parseDouble(fileIn.readLine());
+//        double speedY = Double.parseDouble(fileIn.readLine());
+//        
+//        ball.setXSpeed(speedX);
+//        ball.setYSpeed(speedY);
+//        
+//        dato = fileIn.readLine();
+//        while (dato != null) {
+//
+//            arr = dato.split(",");
+//           // player.setX(arr);
+//            num = (Integer.parseInt(dato));
+//            
+//            //String nom = arr[1];
+//            //vec.add(new Puntaje(nom, num));
+//            dato = fileIn.readLine();
+//        }
+//        fileIn.close();
+//    }
     
     /**
      * Ticks every time to have the game moving
@@ -276,7 +294,7 @@ public class Game implements Runnable {
         
         //Loads a savefile
         if (keyManager.getLoad()) {
-            leeArchivo();
+//            leeArchivo();
         }
         
         if (getGameState() == gameState.normal) {
@@ -286,78 +304,64 @@ public class Game implements Runnable {
             
             //Saves the game if the player presses "G"
             if (keyManager.getSave()) {
-                save();
-            }
-            
-            if (bricks.isEmpty()) {
-                setGameState(gameState.victory);
+//                save();
             }
             
             // advancing player with collision
             player.tick();
             
-            // ticking the ball
-            ball.tick();
-            // ticking bricks
-            for (int i = 0; i < bricks.size(); i++) {
-                Brick myBrick = bricks.get(i);
-                myBrick.tick();
+            // ticking invaders
+            for (int i = 0; i < invaders.size(); i++) {
+                Invader myInvader = invaders.get(i);
+                myInvader.tick();
             }
             
-            //Checks if there's a collison with the bricks
-            for(int j = 0; j < bricks.size(); j++){
-                Brick myBrick = bricks.get(j);
+            //Checks if there's a collison with the invader
+            for(int i = 0; i < invaders.size(); i++){
+                Invader myInvader = invaders.get(i);
 
-                boolean Intersects = ball.intersecta(myBrick);
+                boolean Intersects = bullet.intersecta(myInvader);
 
-                if(myBrick.getState() != Brick.status.destroyed && Intersects && brickTimer <= 0){
-                    if (myBrick.getState() == Brick.status.normal) myBrick.setState(Brick.status.hit);
-                    else if (myBrick.getState() == Brick.status.hit) myBrick.setState(Brick.status.destroyed);
+                if(myInvader.getState() != Invader.status.destroyed && Intersects){
+                    myInvader.setState(Invader.status.destroyed);
                     Intersects = false;
-                    brickTimer = 10;
-                    ball.setYSpeed(ball.getYSpeed() * -1);
-                    ball.setXSpeed(ball.getXSpeed() * -1);
+                    bullet.setY(-bullet.getHeight());
                 }
                 
-                if (myBrick.getState() == Brick.status.destroyed) {                    
-                    if (myBrick.isAnimOver())   bricks.remove(j);
-                }
-            }
-        }
-        //Stops everything if the player wins 
-        if (getGameState() == gameState.victory) {
-            if (keyManager.enter) {
-                setGameState(gameState.normal);
-                keyManager.setStart(false);
-                player = new Player(getWidth()/2 - 113, getHeight() - 75, 1, 226, 50, this);
-                ball = new Projectile(player.getX() + player.getWidth()/2 - 25, player.getY() - 51, 50, 50, this);
-                for (int i = 0; i < 4; i++) {
-                    for (int j = 0; j < 9; j++) {
-                        int iPosX = j * 141;
-                        int iPosY = 158 - i * 47;
-                        bricks.add(new Brick(iPosX, iPosY, 155, 55, this));
-                    }
+                if (myInvader.getState() == Invader.status.destroyed) {                    
+                    if (myInvader.isAnimOver())   invaders.remove(i);
                 }
             }
         }
 
-        //stops everything until the player presses "enter" if the loses
+        //stops everything until the player presses "enter" if he loses
         if (getGameState() == gameState.gameOver) {
-             for (int i = 0; i < bricks.size(); i++) {
-                 bricks.remove(i);
-             }
-             for (int i = 0; i < drops.size(); i++) {
-                 drops.remove(i);
-             }
+             for (int i = 0; i < invaders.size(); i++) {
+                 invaders.remove(i);
+            }
             if (keyManager.enter) {
                 setGameState(gameState.normal);
                 keyManager.setStart(false);
                 player = new Player(getWidth()/2 - 113, getHeight() - 75, 1, 226, 50, this);
-                for (int i = 0; i < 4; i++) {
-                    for (int j = 0; j < 9; j++) {
-                        int iPosX = j * 141;
-                        int iPosY = 158 - i * 47;
-                        bricks.add(new Brick(iPosX, iPosY, 155, 55, this));
+                // Add pulpo invaders
+                for (int j = 0; j < 12; j++) {
+                    int iPosX = j * ALIEN_WIDTH;
+                    invaders.add(new Invader(iPosX + BORDERX, BORDERY, ALIEN_WIDTH, ALIEN_HEIGHT, Invader.Type.pulpo, this));            
+                }
+                // Add weird invaders
+                for (int i = 0; i < 2; i++) {
+                    for (int j = 0; j < 12; j++) {
+                        int iPosX = j * ALIEN_WIDTH;
+                        int iPosY = ALIEN_HEIGHT + i * ALIEN_HEIGHT;
+                        invaders.add(new Invader(iPosX + BORDERX, iPosY + BORDERY, ALIEN_WIDTH, ALIEN_HEIGHT, Invader.Type.monstro, this));            
+                    }
+                }        
+                // Add normal invaders
+                for (int i = 0; i < 2; i++) {
+                    for (int j = 0; j < 12; j++) {
+                        int iPosX = j * ALIEN_WIDTH;
+                        int iPosY = (ALIEN_HEIGHT * 3) + i * ALIEN_HEIGHT;
+                        invaders.add(new Invader(iPosX + BORDERX, iPosY + BORDERY, ALIEN_WIDTH, ALIEN_HEIGHT, Invader.Type.invader, this));            
                     }
                 }
             }
@@ -384,33 +388,23 @@ public class Game implements Runnable {
             if (getGameState() == gameState.normal || getGameState() == gameState.pause) {
                 g.drawImage(Assets.background, 0, 0, width, height, null);
                 player.render(g);   
-                ball.render(g);
-                //Prints the bricks in the screen
-                for (int i = 0; i < bricks.size(); i++) {
-                    Brick myBrick = bricks.get(i);
-                    myBrick.render(g);
+                bullet.render(g);
+                //Draws the invaders in the screen
+                for (int i = 0; i < invaders.size(); i++) {
+                    Invader myInvader = invaders.get(i);
+                    myInvader.render(g);
                 }
-                //Prints the powerUps if there's any
-                for (int i = 0; i < drops.size(); i++) {
-                    PowerUp myPower = drops.get(i);
-                    myPower.render(g);
-                }
-                //Prints the pause screen
+                //Draws the pause screen
                 if (getGameState() == gameState.pause) {
                     g.drawImage(Assets.pause, 0, 0, getWidth(), getHeight(), null);
-                }
-                
+                }                
             }
             
-            //Prints the gameover screen if the player lost
+            //Draws the gameover screen if the player lost
             if (getGameState() == gameState.gameOver) {
                 g.drawImage(Assets.gameOver, 0, 0, getWidth(), getHeight(), null);
-            }
+            }            
             
-            //Prints the victory screen if the player won
-            if (getGameState() == gameState.victory) {
-                g.drawImage(Assets.victory, 0, 0, getWidth(), getHeight(), null);
-            }
             bs.show();
             g.dispose();
         }
