@@ -17,6 +17,7 @@ public class KeyManager implements KeyListener {
     
     public boolean left;  // flag to move left the player
     public boolean right; // flag to move right the player
+    public boolean shoot; // flag to shoot
     public boolean enter; // flag to restart game
     
     private boolean keys[]; // to store the flags for every key
@@ -101,6 +102,13 @@ public class KeyManager implements KeyListener {
     public boolean getRestart() {
         return restart;
     }
+    /**
+     * Knows if the player has just shot
+     * @return true if the player has just shot
+     */
+    public boolean getShoot() {
+        return shoot;
+    }
     
     /**
      * to enable or disable moves on every tick
@@ -137,6 +145,7 @@ public class KeyManager implements KeyListener {
         left = keys[KeyEvent.VK_LEFT]; 
         right = keys[KeyEvent.VK_RIGHT];
         enter = keys[KeyEvent.VK_ENTER];
+        shoot = keys[KeyEvent.VK_SPACE];
         lastPause = keys[KeyEvent.VK_P];
         lastLoad = keys[KeyEvent.VK_C];
         lastSave = keys[KeyEvent.VK_G];

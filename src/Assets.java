@@ -18,6 +18,7 @@ public class Assets {
     public static BufferedImage gameOver; // to store game over image
     public static BufferedImage pause; //to store the pause image
     public static BufferedImage player; //to store the image of the player
+    public static BufferedImage bullet; //to store the image of the bullet;
     
     public static BufferedImage invaderSprites; // to store the sprites
     public static BufferedImage invaders[]; // pictures to go up
@@ -48,6 +49,7 @@ public class Assets {
         gameOver = ImageLoader.loadImage("/images/gameOver.jpg"); // game over image
         pause = ImageLoader.loadImage("/images/Pausa.png"); // pause screen image
         player = ImageLoader.loadImage("/images/player.png"); //player image
+        bullet = ImageLoader.loadImage("/images/bullet.png"); //bullet image
         
         invaderSprites = ImageLoader.loadImage("/images/invader.png"); // invaders sprites
         SpreadSheet invaderSpritesheet = new SpreadSheet(invaderSprites);// spritesheet of the invaders

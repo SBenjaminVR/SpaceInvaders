@@ -35,6 +35,8 @@ public class Game implements Runnable {
     private KeyManager keyManager; // to manage the keyboard
     private WriteFile saveFile; //to store the saveFile
     private Player player; // to use a player
+    private boolean bulletExists; //to see if a bulletExists;
+  //  private Bullet bullet; //to use a bullet
     public enum gameState { normal, pause, gameOver}
     private gameState gameState;
     public static int GROUND; // to check when invaders hit the ground and invade us
@@ -104,12 +106,18 @@ public class Game implements Runnable {
     public Projectile getBullet() {
         return bullet;
     }  
+    
+    public void setBulletExists(boolean bulletExists) {
+        this.bulletExists = bulletExists;
+    }
         
     /**
      * Initializing the display window of the game
      */
     private void init() {
         display = new Display(title, width, height);
+        bullet = null;
+        bulletExists = false;
         Assets.init();        
         player = new Player(getWidth()/2 - PLAYER_WIDTH/2, getHeight() - PLAYER_HEIGHT - BORDERY, 1, PLAYER_WIDTH, PLAYER_HEIGHT, this);
         bullet = new Projectile(getWidth()/2, -50, 50, 50, this);
@@ -295,6 +303,14 @@ public class Game implements Runnable {
         //Loads a savefile
         if (keyManager.getLoad()) {
 //            leeArchivo();
+        }
+        if (keyManager.getShoot() && !bulletExists) {
+            bullet = new Projectile(player.getX()+player.getWidth()/2 - 2, player.getY(), 5, 10, this);
+            bulletExists = true;
+            
+        }
+        if (bullet != null) {
+            bullet.tick();
         }
         
         if (getGameState() == gameState.normal) {

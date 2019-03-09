@@ -121,11 +121,13 @@ public class Projectile extends Item {
         // refresh hitbox location
         hitbox.setLocation(getX(), getY());
         // Start moving        
-        anim.tick();
+       // anim.tick();
         // Collision with walls
         if (getY() <= -getHeight()) {
             setSpeed(0);
+            game.setBulletExists(false);
         }
+        setY(getY()-10);
     }
     /**
      * Function to check intersections with the projectile
@@ -142,6 +144,6 @@ public class Projectile extends Item {
      */
     @Override
     public void render(Graphics g) {
-       //g.drawImage(anim.getCurrentFrame(), getX(), getY(), getWidth(), getHeight(), null);
+       g.drawImage(Assets.bullet, getX(), getY(), getWidth(), getHeight(), null);
     }
 }

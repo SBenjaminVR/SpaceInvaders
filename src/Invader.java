@@ -18,8 +18,8 @@ import java.awt.image.BufferedImage;
 
 public class Invader extends Item {
     
-    private int width; //width of the brick
-    private int height; //height of the brick
+    private int width; //width of the invader
+    private int height; //height of the invader
     private Game game; 
     private Animation anim; // to store the animation for the invader
     private BufferedImage destroyEffect; // to store the image for being destroyed
@@ -122,7 +122,7 @@ public class Invader extends Item {
         //If the invader gets destroyed it plays an animation
         if (getState() == status.destroyed) {
             if (!destroySndDone) {
-                destroySound.play();
+                //destroySound.play();
                 destroySndDone = true;
             }  
         }
