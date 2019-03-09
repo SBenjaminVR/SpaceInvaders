@@ -1,12 +1,9 @@
 
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -36,6 +33,7 @@ public class Game implements Runnable {
     private WriteFile saveFile; //to store the saveFile
     private Player player; // to use a player
     private boolean bulletExists; //to see if a bulletExists;
+    private int score; // score of the game
   //  private Bullet bullet; //to use a bullet
     public enum gameState { normal, pause, gameOver}
     private gameState gameState;
@@ -117,6 +115,7 @@ public class Game implements Runnable {
     private void init() {
         display = new Display(title, width, height);
         bullet = null;
+        score = 0;
         bulletExists = false;
         Assets.init();        
         player = new Player(getWidth()/2 - PLAYER_WIDTH/2, getHeight() - PLAYER_HEIGHT - BORDERY, 1, PLAYER_WIDTH, PLAYER_HEIGHT, this);
@@ -345,6 +344,7 @@ public class Game implements Runnable {
                     myInvader.setState(Invader.status.destroyed);
                     Intersects = false;
                     bullet.setY(-bullet.getHeight());
+                    score += 100; 
                 }
                 
                 if (myInvader.getState() == Invader.status.destroyed) {                    
@@ -412,7 +412,11 @@ public class Game implements Runnable {
                 for (int i = 0; i < invaders.size(); i++) {
                     Invader myInvader = invaders.get(i);
                     myInvader.render(g);
-                }
+                } 
+                g.setFont(new Font("Arial", Font.PLAIN, 40));
+                g.setColor(Color.white);
+                g.drawString("Score: ", 0, 40);
+                g.drawString(String.valueOf(score), 120, 40);
                 //Draws the pause screen
                 if (getGameState() == gameState.pause) {
                     g.drawImage(Assets.pause, 0, 0, getWidth(), getHeight(), null);
