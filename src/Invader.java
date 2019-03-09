@@ -128,6 +128,7 @@ public class Invader extends Item {
         }
         else if (getState() == status.normal) {
             anim.tick();
+            
         }
     }
     

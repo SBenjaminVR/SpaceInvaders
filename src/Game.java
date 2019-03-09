@@ -124,14 +124,14 @@ public class Game implements Runnable {
         // Add pulpo invaders
         for (int j = 0; j < 12; j++) {
             int iPosX = (BORDERX + ALIEN_WIDTH)* j;
-            invaders.add(new Invader(iPosX + BORDERX, BORDERY, ALIEN_WIDTH, ALIEN_HEIGHT, Invader.Type.pulpo, this));            
+            invaders.add(new Invader(iPosX + BORDERX, BORDERY * 3, ALIEN_WIDTH, ALIEN_HEIGHT, Invader.Type.pulpo, this));            
         }
         // Add normal invaders
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < 12; j++) {
                 int iPosX = (BORDERX + ALIEN_WIDTH)* j;
                 int iPosY = BORDERY * i + ALIEN_HEIGHT + i * ALIEN_HEIGHT;
-                invaders.add(new Invader(iPosX + BORDERX, iPosY + BORDERY * 2, ALIEN_WIDTH, ALIEN_HEIGHT, Invader.Type.invader, this));            
+                invaders.add(new Invader(iPosX + BORDERX, iPosY + BORDERY * 4, ALIEN_WIDTH, ALIEN_HEIGHT, Invader.Type.invader, this));            
             }
         }        
         // Add weird invaders
@@ -139,7 +139,7 @@ public class Game implements Runnable {
             for (int j = 0; j < 12; j++) {
                 int iPosX = (BORDERX + ALIEN_WIDTH)* j;
                 int iPosY = BORDERY * i + ALIEN_HEIGHT * 3 + i * ALIEN_HEIGHT;
-                invaders.add(new Invader(iPosX + BORDERX, iPosY + BORDERY * 4, ALIEN_WIDTH, ALIEN_HEIGHT, Invader.Type.monstro, this));            
+                invaders.add(new Invader(iPosX + BORDERX, iPosY + BORDERY * 6, ALIEN_WIDTH, ALIEN_HEIGHT, Invader.Type.monstro, this));            
             }
         }
         display.getJframe().addKeyListener(keyManager);
@@ -365,14 +365,14 @@ public class Game implements Runnable {
                 // Add pulpo invaders
                 for (int j = 0; j < 12; j++) {
                     int iPosX = j * ALIEN_WIDTH;
-                    invaders.add(new Invader(iPosX + BORDERX, BORDERY, ALIEN_WIDTH, ALIEN_HEIGHT, Invader.Type.pulpo, this));            
+                    invaders.add(new Invader(iPosX + BORDERX, BORDERY * 3, ALIEN_WIDTH, ALIEN_HEIGHT, Invader.Type.pulpo, this));            
                 }
                 // Add weird invaders
                 for (int i = 0; i < 2; i++) {
                     for (int j = 0; j < 12; j++) {
                         int iPosX = j * ALIEN_WIDTH;
                         int iPosY = ALIEN_HEIGHT + i * ALIEN_HEIGHT;
-                        invaders.add(new Invader(iPosX + BORDERX, iPosY + BORDERY, ALIEN_WIDTH, ALIEN_HEIGHT, Invader.Type.monstro, this));            
+                        invaders.add(new Invader(iPosX + BORDERX, iPosY + BORDERY * 4, ALIEN_WIDTH, ALIEN_HEIGHT, Invader.Type.monstro, this));            
                     }
                 }        
                 // Add normal invaders
@@ -380,7 +380,7 @@ public class Game implements Runnable {
                     for (int j = 0; j < 12; j++) {
                         int iPosX = j * ALIEN_WIDTH;
                         int iPosY = (ALIEN_HEIGHT * 3) + i * ALIEN_HEIGHT;
-                        invaders.add(new Invader(iPosX + BORDERX, iPosY + BORDERY, ALIEN_WIDTH, ALIEN_HEIGHT, Invader.Type.invader, this));            
+                        invaders.add(new Invader(iPosX + BORDERX, iPosY + BORDERY * 6, ALIEN_WIDTH, ALIEN_HEIGHT, Invader.Type.invader, this));            
                     }
                 }
             }
