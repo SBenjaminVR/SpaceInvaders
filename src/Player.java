@@ -119,7 +119,10 @@ public class Player extends Item {
     public void setState(playerState state) {
         this.state = state;
     }
-
+    /**
+     * Returns the number of lives the player currently has
+     * @return 
+     */
     public int getCurrentLives() {
         return currentLives;
     }
