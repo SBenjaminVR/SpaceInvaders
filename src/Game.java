@@ -391,6 +391,10 @@ public class Game implements Runnable {
             //Checks if there's a collison with the invader
             for(int i = 0; i < invaders.size(); i++){
                 Invader myInvader = invaders.get(i);
+                Bomb myBomb = myInvader.getBomb();
+                if (myBomb != null) {
+                    myBomb.tick();
+                }
 
                 boolean Intersects = bullet.intersecta(myInvader);
 
@@ -468,6 +472,10 @@ public class Game implements Runnable {
                 for (int i = 0; i < invaders.size(); i++) {
                     Invader myInvader = invaders.get(i);
                     myInvader.render(g);
+                    Bomb myBomb = myInvader.getBomb();
+                    if (myBomb != null) {
+                        myBomb.render(g);
+                    }
                 } 
                 g.setFont(new Font("Arial", Font.PLAIN, 40));
                 g.setColor(Color.white);
