@@ -3,7 +3,12 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -256,96 +261,122 @@ public class Game implements Runnable {
     /**
      * Saves the game in "save.txt" that can bea loaded later
      */
-//    private void save() {
-//        try {
-//            saveFile = new WriteFile("save.txt", false);
-//            saveFile.writeToFile(String.valueOf(player.getX()));
-//            saveFile.setAppend(true);
-//            saveFile.writeToFile(String.valueOf(bricks.size()));
-//            //Guarda los bloques en el juego 
-//            for (int i = 0; i < bricks.size(); i++) {
-//                Invader myBrick = bricks.get(i);
-//                saveFile.writeToFile(String.valueOf(myBrick.getX()));
-//                saveFile.writeToFile(String.valueOf(myBrick.getY()));
-//                saveFile.writeToFile(String.valueOf(myBrick.getState()));
-//            }
-//            //Guarda valores de la bola
-//            saveFile.writeToFile(String.valueOf(ball.getX()));
-//            saveFile.writeToFile(String.valueOf(ball.getY()));
-//            saveFile.writeToFile(String.valueOf(ball.getXSpeed()));
-//            saveFile.writeToFile(String.valueOf(ball.getYSpeed()));
-//        } catch (IOException e) {
-//            System.out.println(e.getMessage());
-//        }
-//    }
+    private void save() {
+        try {
+            saveFile = new WriteFile("save.txt", false);
+            saveFile.writeToFile(String.valueOf(player.getX()));
+            saveFile.setAppend(true);
+            saveFile.writeToFile(String.valueOf(invaders.size()));
+            //Guarda los bloques en el juego 
+            for (int i = 0; i < invaders.size(); i++) {
+                Invader myInvader = invaders.get(i);
+                Bomb myBomb = myInvader.getBomb();
+                saveFile.writeToFile(String.valueOf(myInvader.getType()));
+                saveFile.writeToFile(String.valueOf(myInvader.getX()));
+                saveFile.writeToFile(String.valueOf(myInvader.getY()));
+                saveFile.writeToFile(String.valueOf(myInvader.getState()));
+                if (myBomb != null) {
+                   saveFile.writeToFile("BOMB");
+                   saveFile.writeToFile(String.valueOf(myBomb.getX()));
+                   saveFile.writeToFile(String.valueOf(myBomb.getY()));
+                }
+                else {
+                    saveFile.writeToFile("GOOD");
+                }
+            }
+            //Guarda valores de la bola
+            saveFile.writeToFile(String.valueOf(score));
+            saveFile.writeToFile(String.valueOf(player.getCurrentLives())); 
+            if (bullet != null) {
+                saveFile.writeToFile("BULLET");
+                saveFile.writeToFile(String.valueOf(bullet.getX()));
+                saveFile.writeToFile(String.valueOf(bullet.getY()));
+            }
+            else {
+                saveFile.writeToFile("NO");
+            }
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+    }
     
     /**
      * Loads a game if it has a save file;
      * @throws IOException 
      */
-//    public void leeArchivo() throws IOException {
-//        BufferedReader fileIn;
-//        try {
-//            fileIn = new BufferedReader(new FileReader("save.txt"));
-//        } catch (FileNotFoundException e) {
-//            File puntos = new File("save.txt");
-//            PrintWriter fileOut = new PrintWriter(puntos);
-//            fileOut.println("100,demo");
-//            fileOut.close();
-//            fileIn = new BufferedReader(new FileReader("save.txt"));
-//        }
-//        String dato = fileIn.readLine();
-//        
-//        int num = (Integer.parseInt(dato));
-//        int iPosX, iPosY;
-//        player.setX(num);
-//        
-//        int numBlocks = Integer.parseInt(fileIn.readLine());
-//        bricks.clear();
-//        for (int i = 0; i < numBlocks; i++) {
-//             iPosX = Integer.parseInt(fileIn.readLine());
-//             iPosY = Integer.parseInt(fileIn.readLine());
-//            bricks.add(new Invader(iPosX, iPosY, 155, 55, this));
-//            
-//            Invader myBrick = bricks.get(i);
-//            String actualState = fileIn.readLine();
-//            
-//            if ("normal".equals(actualState)) {
-//             myBrick.setState(Invader.status.normal);    
-//            }
-//            if ("hit".equals(actualState)) {
-//             myBrick.setState(Invader.status.hit);    
-//            }
-//            if ("destroyed ".equals(actualState)) {
-//             myBrick.setState(Invader.status.destroyed);    
-//            }
-//        }
-//        
-//        iPosX = Integer.parseInt(fileIn.readLine());
-//        iPosY = Integer.parseInt(fileIn.readLine());
-//        
-//        ball.setX(iPosX);
-//        ball.setY(iPosY);
-//        
-//        double speedX = Double.parseDouble(fileIn.readLine());
-//        double speedY = Double.parseDouble(fileIn.readLine());
-//        
-//        ball.setXSpeed(speedX);
-//        ball.setYSpeed(speedY);
-//        
-//        dato = fileIn.readLine();
-//        while (dato != null) {
-//
-//            arr = dato.split(",");
-//           // player.setX(arr);
-//            num = (Integer.parseInt(dato));
-//            
-//            //String nom = arr[1];
-//            //vec.add(new Puntaje(nom, num));
-//            dato = fileIn.readLine();
-//        }
-//        fileIn.close();
-//    }
+    public void leeArchivo() throws IOException {
+        BufferedReader fileIn;
+        try {
+            fileIn = new BufferedReader(new FileReader("save.txt"));
+        } catch (FileNotFoundException e) {
+            File puntos = new File("save.txt");
+            PrintWriter fileOut = new PrintWriter(puntos);
+            fileOut.println("100,demo");
+            fileOut.close();
+            fileIn = new BufferedReader(new FileReader("save.txt"));
+        }
+        String dato = fileIn.readLine();
+        
+        int num = (Integer.parseInt(dato));
+        int iPosX, iPosY;
+        player.setX(num);
+        
+        int invadersSize = Integer.parseInt(fileIn.readLine());
+        invaders.clear();
+        for (int i = 0; i < invadersSize; i++) {
+            dato = fileIn.readLine();
+            iPosX = Integer.parseInt(fileIn.readLine());
+            iPosY = Integer.parseInt(fileIn.readLine());
+            if ("invader".equals(dato)) {
+                invaders.add(new Invader(iPosX, iPosY, 50, 25, Invader.Type.invader, this));
+            }   
+            if ("pulpo".equals(dato)) {
+                invaders.add(new Invader(iPosX, iPosY, 50, 25, Invader.Type.pulpo, this));
+            }
+            if ("monstro".equals(dato)) {
+                invaders.add(new Invader(iPosX, iPosY, 50, 25, Invader.Type.monstro, this));
+            }
+           dato = fileIn.readLine();
+           Invader myInvader = invaders.get(i);
+           if ("normal".equals(dato)) {
+               myInvader.setState(Invader.status.normal);
+           }
+           else {
+               myInvader.setState(Invader.status.destroyed);
+           }
+           dato = fileIn.readLine();
+           if ("BOMB".equals(dato)) {
+               iPosX = Integer.parseInt(fileIn.readLine());
+                iPosY = Integer.parseInt(fileIn.readLine());
+                Bomb myBomb = new Bomb(iPosX, iPosY, 12, 24, this);
+                myInvader.setBomb(myBomb);
+            }
+
+        }
+        score = Integer.parseInt(fileIn.readLine());
+        player.setCurrentLives(Integer.parseInt(fileIn.readLine()));
+
+        dato = fileIn.readLine();
+        if ("BULLET".equals(dato)) {
+            iPosX = Integer.parseInt(fileIn.readLine());
+            iPosY = Integer.parseInt(fileIn.readLine());
+            bulletExists = true;
+            bullet = new Projectile(iPosX, iPosY, 5, 10, this);
+        }
+        
+        dato = fileIn.readLine();
+        while (dato != null) {
+
+          //  arr = dato.split(",");
+           // player.setX(arr);
+           // num = (Integer.parseInt(dato));
+            
+            //String nom = arr[1];
+            //vec.add(new Puntaje(nom, num));
+            dato = fileIn.readLine();
+        }
+        fileIn.close();
+    }
     
     /**
      * Ticks every time to have the game moving
@@ -367,7 +398,7 @@ public class Game implements Runnable {
         
         //Loads a savefile
         if (keyManager.getLoad()) {
-//            leeArchivo();
+           leeArchivo();
         }
         
         // Restarts the game at any moment if the player presser 'R'
@@ -410,7 +441,7 @@ public class Game implements Runnable {
             
             //Saves the game if the player presses "G"
             if (keyManager.getSave()) {
-//                save();
+                save();
             }            
 
             // advancing player with collision
