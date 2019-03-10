@@ -23,9 +23,9 @@ public class Player extends Item {
     private Rectangle hitbox;// The player's hitbox
     public enum playerState {alive, dead } // Declares the player's possible states
     private playerState state; // To store the player's current state
-    public static final int LIVES = 5;
-    private int currentLives;
-    private int deathTimer;
+    public static final int LIVES = 5; // Total number of lives
+    private int currentLives; // To store the current number of lives
+    private int deathTimer; // To store the death timer
     
     /**
      * Constructor with parameters
@@ -44,7 +44,6 @@ public class Player extends Item {
         this.game = game;
         this.speed = 10;
         this.hitbox = new Rectangle(x, y, width, height/3);
-        //this.bar = new Animation(Assets.playerBar, 100);
         this.state = playerState.alive;
         this.currentLives = LIVES;
         deathTimer = 30;
@@ -121,16 +120,22 @@ public class Player extends Item {
     }
     /**
      * Returns the number of lives the player currently has
-     * @return 
+     * @return int value of the current lives
      */
     public int getCurrentLives() {
         return currentLives;
     }
-
+    /**
+     * Sets the current lives of the player
+     * @param currentLives 
+     */
     public void setCurrentLives(int currentLives) {
         this.currentLives = currentLives;
     }
-
+    /**
+     * Gets the int value of the timer for death animation
+     * @return int value of the timer
+     */
     public int getDeathTimer() {
         return deathTimer;
     }    
