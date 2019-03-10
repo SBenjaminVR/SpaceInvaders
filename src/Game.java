@@ -311,7 +311,7 @@ public class Game implements Runnable {
         } catch (FileNotFoundException e) {
             File puntos = new File("save.txt");
             PrintWriter fileOut = new PrintWriter(puntos);
-            fileOut.println("100,demo");
+            fileOut.println("NO EXISTE ARCHIVO DE SAVE");
             fileOut.close();
             fileIn = new BufferedReader(new FileReader("save.txt"));
         }
