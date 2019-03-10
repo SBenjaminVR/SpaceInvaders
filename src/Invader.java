@@ -27,12 +27,12 @@ public class Invader extends Item {
     public enum Type { invader, monstro, pulpo }
     private status state ; //state
     private Type type; // type of invader
-    private boolean animOver;  //Boolean to know if the animetion is over
-    private SoundClip destroySound; // to play when invader is destroyed
     private boolean destroySndDone;
     private int destroyTimer;
     private boolean goingDown;
     private Bomb bomb; //To store if the alien has a bomb
+    private Rectangle lastInColBox; // Rectangle to check if invader is the last one in column
+    private boolean lastInCol;
     
     public Invader(int x, int y, int width, int height, Type type , Game game) {
         super(x, y);
@@ -41,24 +41,24 @@ public class Invader extends Item {
         this.type = type;
         this.game = game;
         if (this.type == Type.invader) {
-            this.anim = new Animation (Assets.invaders, 200);
+            this.anim = new Animation (Assets.invaders, 700);
             this.destroyEffect = Assets.invaderDestroyEffect;
         }
         else if (this.type == Type.monstro) {
-            this.anim = new Animation (Assets.monstros, 200);
+            this.anim = new Animation (Assets.monstros, 700);
             this.destroyEffect = Assets.monstroDestroyEffect;
         }
         else if (this.type == Type.pulpo) {
-            this.anim = new Animation (Assets.pulpos, 200);
+            this.anim = new Animation (Assets.pulpos, 700);
             this.destroyEffect = Assets.pulpoDestroyEffect;
         }        
         this.state = status.normal;
-        this.animOver = false;
-        this.destroySound = Assets.destroySound;
         this.destroySndDone = false;
         this.destroyTimer = 0;
         this.goingDown = false;
         this.bomb = null;
+        this.lastInColBox = new Rectangle(x + width / 4, y + height + 1, width / 2, height*5);
+        this.lastInCol = false;
     }
     
     /**
@@ -111,14 +111,6 @@ public class Invader extends Item {
         this.state = state;
     } 
 
-    /**
-     * To get a bool that says if the destroyed brick animation is over
-     * @return true if the animation is over
-     */
-    public boolean isAnimOver() {
-        return animOver;
-    }
-
     public Type getType() {
         return type;
     }  
@@ -141,11 +133,29 @@ public class Invader extends Item {
     
     public Bomb getBomb() {
         return bomb;
-
     }
+
+    public void setBomb(Bomb bomb) {
+        this.bomb = bomb;
+    }
+
+    public boolean isLastInCol() {
+        return lastInCol;
+    }
+
+    public void setLastInCol(boolean lastInCol) {
+        this.lastInCol = lastInCol;
+    }
+
+    public Rectangle getLastInColBox() {
+        return lastInColBox;
+    }
+    
+    
         
     @Override
     public void tick() {
+        lastInColBox.setLocation(getX() + getWidth() / 4, getY() + getHeight() + 1);
         //If the invader gets destroyed it plays an animation
         if (getState() == status.destroyed) {
             if (getDestroyTimer() > 0) setDestroyTimer(getDestroyTimer() - 1);
@@ -160,8 +170,7 @@ public class Invader extends Item {
             } 
         }
         else if (getState() == status.normal) {
-            anim.tick();
-
+            anim.tick();            
             if (game.getJumpTimer() == 0) {
                 if (isGoingDown()) {
                     setY(getY() + getHeight());
@@ -185,9 +194,14 @@ public class Invader extends Item {
                 int azar = (int) (Math.random() * (10000-1+1) ) + 1;
                 if (azar == 1) {
                     bomb = new Bomb(x + width/2-3, y+height, 12, 24, game);
+                    Assets.enemyShootSound.play();
                 }
             }            
         }
+    }
+    public boolean intersectsBelow(Object obj) {
+        return obj instanceof Invader && lastInColBox.intersects(((Invader) obj).getPerimetro());
+        
     }
     
     /**
@@ -207,6 +221,8 @@ public class Invader extends Item {
         if (getState() == status.destroyed) {
             g.drawImage(destroyEffect, getX(), getY(), getWidth(), getHeight(), null);
         }     
+        
+//        g.drawRect(lastInColBox.x, lastInColBox.y, lastInColBox.width, lastInColBox.height);
        
     }
 }

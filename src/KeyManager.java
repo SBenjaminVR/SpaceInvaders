@@ -29,7 +29,6 @@ public class KeyManager implements KeyListener {
     private boolean lastPause; //flag to know the last Pause 
     private boolean lastSave; //flag to know the last Save 
     private boolean lastLoad;//flag to know the last Load 
-    private boolean lastRestart; //flag to restart the game
 
     
     public KeyManager() {
@@ -51,9 +50,10 @@ public class KeyManager implements KeyListener {
     public void keyReleased(KeyEvent e) {
         // set false to every key released
         keys[e.getKeyCode()] = false;
-        if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-            start = true;
+        if (e.getKeyCode() == KeyEvent.VK_R) {
+            restart = true;
         }
+        
     }
 
     /**
@@ -102,6 +102,11 @@ public class KeyManager implements KeyListener {
     public boolean getRestart() {
         return restart;
     }
+
+    public void setRestart(boolean restart) {
+        this.restart = restart;
+    }
+    
     /**
      * Knows if the player has just shot
      * @return true if the player has just shot
@@ -135,12 +140,6 @@ public class KeyManager implements KeyListener {
         else {
             load = false; 
         }
-        if (lastRestart && !keys[KeyEvent.VK_R]) {
-            load = true;
-        }
-        else {
-            load = false; 
-        }
         
         left = keys[KeyEvent.VK_LEFT]; 
         right = keys[KeyEvent.VK_RIGHT];
@@ -149,6 +148,5 @@ public class KeyManager implements KeyListener {
         lastPause = keys[KeyEvent.VK_P];
         lastLoad = keys[KeyEvent.VK_C];
         lastSave = keys[KeyEvent.VK_G];
-        lastRestart = keys[KeyEvent.VK_R];
     }
 }

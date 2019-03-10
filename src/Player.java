@@ -23,6 +23,9 @@ public class Player extends Item {
     private Rectangle hitbox;// The player's hitbox
     public enum playerState {alive, dead } // Declares the player's possible states
     private playerState state; // To store the player's current state
+    public static final int LIVES = 5;
+    private int currentLives;
+    private int deathTimer;
     
     /**
      * Constructor with parameters
@@ -43,6 +46,8 @@ public class Player extends Item {
         this.hitbox = new Rectangle(x, y, width, height/3);
         //this.bar = new Animation(Assets.playerBar, 100);
         this.state = playerState.alive;
+        this.currentLives = LIVES;
+        deathTimer = 30;
     }
      /**
       * Returns the width of the player
@@ -114,6 +119,18 @@ public class Player extends Item {
     public void setState(playerState state) {
         this.state = state;
     }
+
+    public int getCurrentLives() {
+        return currentLives;
+    }
+
+    public void setCurrentLives(int currentLives) {
+        this.currentLives = currentLives;
+    }
+
+    public int getDeathTimer() {
+        return deathTimer;
+    }    
         
     /**
      * Function tick that gets called every frame and updates player logic
@@ -122,9 +139,8 @@ public class Player extends Item {
     public void tick() {
      
         // Normal game stuff
-        if (state == playerState.alive) {
-            // refresh animation
-         //   bar.tick();
+        if (getState() == playerState.alive) {
+            
             // refresh hitbox location
             hitbox.setLocation(getX(), getY());
             
@@ -143,7 +159,15 @@ public class Player extends Item {
             if (getX() <= 0) {
                 setX(0);
             }
-        }       
+            
+        }
+        else if (getState() == playerState.dead) {
+            if (deathTimer > -60) deathTimer--;
+            if (deathTimer <= -60) {
+                deathTimer = 30;
+                setState(playerState.alive);
+            }
+        }
     }
     
     /**
@@ -152,6 +176,11 @@ public class Player extends Item {
      */    
     @Override
     public void render(Graphics g) {
-      g.drawImage(Assets.player, getX(), getY(), getWidth(), getHeight(), null);
+        if (getState() == playerState.alive) {
+            g.drawImage(Assets.player, getX(), getY(), getWidth(), getHeight(), null);
+        }
+        else if (deathTimer > 0){
+            g.drawImage(Assets.playerDead, getX(), getY(), getWidth(), getHeight(), null);
+        }
     }
 }
