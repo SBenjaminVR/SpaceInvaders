@@ -23,10 +23,6 @@ public class Bomb extends Item {
     private boolean collision; //collision with the wall 
     private Rectangle hitbox; // projectile's hitbox 
     private Animation anim; // to store the animation for the bomb
-//    public enum ballStatus{ // Declares the possible states of the projectile
-//        idle, base, fallen
-//    }
-//    private ballStatus state; // To store the projectile's current state
     private double speed; // To store the general speed used to calculate horizontal and vertical speed
     
     /**
@@ -75,20 +71,6 @@ public class Bomb extends Item {
     public void setHeight(int height) {
         this.height = height;
     }
-//    /**
-//     * Sets the projectile current state
-//     * @param state of the projectile
-//     */
-//    public void setState(ballStatus state) {
-//        this.state = state;
-//    }
-//    /**
-//     * Returns the current state of the projectile
-//     * @return current state of the projectile
-//     */
-//    public ballStatus getState() {
-//        return state;
-//    }
     
     /**
      * Returns the speed
