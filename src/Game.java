@@ -41,16 +41,17 @@ public class Game implements Runnable {
     public static final int BOMB_HEIGHT = 5;
     public static final int ALIEN_HEIGHT = 25;
     public static final int ALIEN_WIDTH = 50;
-    public static final int BORDERX = 50;
+    public static final int BORDERX = 25;
     public static final int BORDERY = 25;
-    public static final int GO_DOWN = 15;
     public static final int NUMBER_OF_ALIENS_TO_DESTROY = 24;
-    public static final int CHANCE = 5;
-    public static final int DELAY = 17;
     public static final int PLAYER_WIDTH = 50;
     public static final int PLAYER_HEIGHT = 50;
+    public int delay = 40;
     private LinkedList<Invader> invaders;
     private Projectile bullet;
+    private boolean goingLeft;
+    private boolean goingDown;
+    private int jumpTimer;
     
     /**
      * to create title, width and height and set the game is still not running
@@ -67,6 +68,9 @@ public class Game implements Runnable {
         gameState = gameState.normal;
         GROUND = height / 8 *7;
         invaders = new LinkedList<Invader>();
+        goingLeft = true;
+        goingDown = false;
+        jumpTimer = delay;
     }
 
     /**
@@ -108,6 +112,32 @@ public class Game implements Runnable {
     public void setBulletExists(boolean bulletExists) {
         this.bulletExists = bulletExists;
     }
+
+    public boolean isGoingLeft() {
+        return goingLeft;
+    }
+
+    public void setGoingLeft(boolean goingLeft) {
+        this.goingLeft = goingLeft;
+    }
+
+    public int getJumpTimer() {
+        return jumpTimer;
+    }
+
+    public void setJumpTimer(int jumpTimer) {
+        this.jumpTimer = jumpTimer;
+    }
+
+    public boolean isGoingDown() {
+        return goingDown;
+    }
+
+    public void setGoingDown(boolean goingDown) {
+        this.goingDown = goingDown;
+    }
+    
+    
         
     /**
      * Initializing the display window of the game
@@ -121,13 +151,13 @@ public class Game implements Runnable {
         player = new Player(getWidth()/2 - PLAYER_WIDTH/2, getHeight() - PLAYER_HEIGHT - BORDERY, 1, PLAYER_WIDTH, PLAYER_HEIGHT, this);
         bullet = new Projectile(getWidth()/2, -50, 50, 50, this);
         // Add pulpo invaders
-        for (int j = 0; j < 12; j++) {
+        for (int j = 0; j < 11; j++) {
             int iPosX = (BORDERX + ALIEN_WIDTH)* j;
             invaders.add(new Invader(iPosX + BORDERX, BORDERY * 3, ALIEN_WIDTH, ALIEN_HEIGHT, Invader.Type.pulpo, this));            
         }
         // Add normal invaders
         for (int i = 0; i < 2; i++) {
-            for (int j = 0; j < 12; j++) {
+            for (int j = 0; j < 11; j++) {
                 int iPosX = (BORDERX + ALIEN_WIDTH)* j;
                 int iPosY = BORDERY * i + ALIEN_HEIGHT + i * ALIEN_HEIGHT;
                 invaders.add(new Invader(iPosX + BORDERX, iPosY + BORDERY * 4, ALIEN_WIDTH, ALIEN_HEIGHT, Invader.Type.invader, this));            
@@ -135,7 +165,7 @@ public class Game implements Runnable {
         }        
         // Add weird invaders
         for (int i = 0; i < 2; i++) {
-            for (int j = 0; j < 12; j++) {
+            for (int j = 0; j < 11; j++) {
                 int iPosX = (BORDERX + ALIEN_WIDTH)* j;
                 int iPosY = BORDERY * i + ALIEN_HEIGHT * 3 + i * ALIEN_HEIGHT;
                 invaders.add(new Invader(iPosX + BORDERX, iPosY + BORDERY * 6, ALIEN_WIDTH, ALIEN_HEIGHT, Invader.Type.monstro, this));            
@@ -328,11 +358,35 @@ public class Game implements Runnable {
             // advancing player with collision
             player.tick();
             
+            if (getJumpTimer() >= 0) setJumpTimer(getJumpTimer() - 1);
+            else {                
+                setJumpTimer(delay);
+            }
+            if (getJumpTimer() == 0) {
+                for (int i = 0; i < invaders.size(); i++) {
+                    Invader myInvader = invaders.get(i);  
+                    if ((isGoingLeft() && myInvader.getX() - BORDERX <= 0) || (!isGoingLeft() && myInvader.getX() + myInvader.getWidth() + BORDERX >= getWidth())) {
+                        setGoingDown(true);
+                    }
+                    if (myInvader.getX() - BORDERX <= 0) {
+                        setGoingLeft(false);
+                    }
+                    else if (myInvader.getX() + myInvader.getWidth() + BORDERX >= getWidth()) {
+                        setGoingLeft(true);
+                    }
+                }
+            }
             // ticking invaders
             for (int i = 0; i < invaders.size(); i++) {
                 Invader myInvader = invaders.get(i);
+                if (isGoingDown()) myInvader.setGoingDown(true);
                 myInvader.tick();
+                if (myInvader.getState() == Invader.status.destroyed && myInvader.getDestroyTimer() <= 0) {
+                    invaders.remove(i);
+                }
             }
+            
+            if (isGoingDown()) setGoingDown(false);
             
             //Checks if there's a collison with the invader
             for(int i = 0; i < invaders.size(); i++){
@@ -344,6 +398,7 @@ public class Game implements Runnable {
                     myInvader.setState(Invader.status.destroyed);
                     Intersects = false;
                     bullet.setY(-bullet.getHeight());
+                    myInvader.setDestroyTimer(15);
                     score += 100; 
                 }
                 
@@ -351,6 +406,7 @@ public class Game implements Runnable {
                     if (myInvader.isAnimOver())   invaders.remove(i);
                 }
             }
+            
         }
 
         //stops everything until the player presses "enter" if he loses

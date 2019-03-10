@@ -21,7 +21,6 @@ public class Player extends Item {
     private Game game;      // Game object
     private int speed;      // Speed of the player
     private Rectangle hitbox;// The player's hitbox
-    private Animation bar; // to store the animation for the bar
     public enum playerState {alive, dead } // Declares the player's possible states
     private playerState state; // To store the player's current state
     

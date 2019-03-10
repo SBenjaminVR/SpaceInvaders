@@ -30,6 +30,8 @@ public class Invader extends Item {
     private boolean animOver;  //Boolean to know if the animetion is over
     private SoundClip destroySound; // to play when invader is destroyed
     private boolean destroySndDone;
+    private int destroyTimer;
+    private boolean goingDown;
     
     public Invader(int x, int y, int width, int height, Type type , Game game) {
         super(x, y);
@@ -53,6 +55,8 @@ public class Invader extends Item {
         this.animOver = false;
         this.destroySound = Assets.destroySound;
         this.destroySndDone = false;
+        this.destroyTimer = 0;
+        this.goingDown = false;
     }
     
     /**
@@ -116,11 +120,28 @@ public class Invader extends Item {
     public Type getType() {
         return type;
     }  
+
+    public int getDestroyTimer() {
+        return destroyTimer;
+    }
+
+    public void setDestroyTimer(int destroyTimer) {
+        this.destroyTimer = destroyTimer;
+    }   
+    
+     public boolean isGoingDown() {
+        return goingDown;
+    }
+
+    public void setGoingDown(boolean goingDown) {
+        this.goingDown = goingDown;
+    }
         
     @Override
     public void tick() {
         //If the invader gets destroyed it plays an animation
         if (getState() == status.destroyed) {
+            if (getDestroyTimer() > 0) setDestroyTimer(getDestroyTimer() - 1);
             if (!destroySndDone) {
                 //destroySound.play();
                 destroySndDone = true;
@@ -128,7 +149,19 @@ public class Invader extends Item {
         }
         else if (getState() == status.normal) {
             anim.tick();
-            
+            if (game.getJumpTimer() == 0) {
+                if (isGoingDown()) {
+                    setY(getY() + getHeight());
+                    setGoingDown(false);
+                }
+                else if (game.isGoingLeft()) {
+                    setX(getX() - getWidth());
+
+                }
+                else {
+                    setX(getX() + getWidth());                
+                }
+            }
         }
     }
     
