@@ -526,13 +526,6 @@ public class Game implements Runnable {
             }
             
         }
-
-        //stops everything until the player presses "enter" if he loses
-        if (getGameState() == gameState.gameOver) {             
-            if (keyManager.enter) {
-                restartGame();
-            }
-        }
     }
     
     /**
