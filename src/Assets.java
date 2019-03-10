@@ -18,6 +18,7 @@ public class Assets {
     public static BufferedImage gameOver; // to store game over image
     public static BufferedImage pause; //to store the pause image
     public static BufferedImage player; //to store the image of the player
+    public static BufferedImage playerDead; // to store the image of the players death
     public static BufferedImage bullet; //to store the image of the bullet;
     
     public static BufferedImage bombSprites; //to store the enemies bullets
@@ -39,8 +40,8 @@ public class Assets {
     public static BufferedImage pulpoDestroyEffect; // sprites for being destroyed animation
     
     public static SoundClip destroySound; // to store the destroy sound effect
-    public static SoundClip loseSound; // to store the game over sound effect
-    public static SoundClip hitSound; // to store the sound of hitting invaders
+    public static SoundClip enemyShootSound; // to store the game over sound effect
+    public static SoundClip deathSound; // to store the sound of hitting invaders
     public static SoundClip shootSound; // to store the shooting sound
     
     /**
@@ -52,6 +53,7 @@ public class Assets {
         gameOver = ImageLoader.loadImage("/images/gameOver.jpg"); // game over image
         pause = ImageLoader.loadImage("/images/Pausa.png"); // pause screen image
         player = ImageLoader.loadImage("/images/player.png"); //player image
+        playerDead = ImageLoader.loadImage("/images/playerDeath.png");
         bullet = ImageLoader.loadImage("/images/bullet.png"); //bullet image
         
         invaderSprites = ImageLoader.loadImage("/images/invader.png"); // invaders sprites
@@ -72,18 +74,11 @@ public class Assets {
         bombSprites = ImageLoader.loadImage("/images/enemyBullet.png"); // monstros sprites
         SpreadSheet bombSpritesheet = new SpreadSheet(bombSprites);// spritesheet of the monstros
         bombs = new BufferedImage[2]; 
-//        
-//        destroySprites = ImageLoader.loadImage("/images/destroyedAnimationSprite.png"); // the spritesheet of the destroyed bricks
-//        SpreadSheet destroySpritesheet = new SpreadSheet(destroySprites);       // spritesheet for the animation of the destroy effect
-//        destroyEffect = new BufferedImage[6];                               // the sprites of the destroy animation
-//        
-//        destroySound = new SoundClip("/sounds/destroy.wav"); // Bricks destroy sound
-//        loseSound = new SoundClip("/sounds/boom.wav");      // Game over sound
-//        hitSound = new SoundClip("/sounds/hit.wav");        // Brick hit sound
-//        bounceSound = new SoundClip("/sounds/bounce.wav");  // Bar bounce sound
-//        
-//        goodPwrUp = ImageLoader.loadImage("/images/br.png");    // Good power up sprite
-//        badPwrUp = ImageLoader.loadImage("/images/brMalo.png"); // Bad poser up sprite
+        
+        destroySound = new SoundClip("/sounds/destroy.wav"); // Invaders destroy sound
+        deathSound = new SoundClip("/sounds/death.wav");      // Game over sound
+        shootSound = new SoundClip("/sounds/shoot.wav");        // Brick hit sound
+        enemyShootSound = new SoundClip("/sounds/enemyShoot.wav");  // Bar bounce sound
         
         // cropping the pictures for the invaders of all 3 types
         for (int i = 0; i < 2; i++) {
